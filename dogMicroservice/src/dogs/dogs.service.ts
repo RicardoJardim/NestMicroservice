@@ -1,68 +1,78 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Cat } from './dogs.model';
+import { Dog } from './dogs.model';
 @Injectable()
 export class DogsService {
   private id: number = 0;
-  private cats: Cat[] = [];
+  private dog: Dog[] = [];
 
-  async getAllCats(): Promise<any> {
-    return await [...this.cats];
+  async getAlldogs(): Promise<any> {
+    return await [...this.dog];
   }
 
-  async getQueryCat(id: number): Promise<any> {
-    let cat = this.findCat(id)[0];
-    if (!cat) {
+  async getQueryDog(id: number): Promise<any> {
+    let dog = this.findDog(id)[0];
+    if (!dog) {
       return await new NotFoundException();
     }
-    return await { ...cat };
+    return await { ...dog };
   }
 
-  insertCats(title: string, desc: string, size: number, price: number) {
-    this.id++;
-    const newCat = new Cat(this.id, title, desc, size, price);
-    this.cats.push(newCat);
-    return this.id;
-  }
-  getSingleCat(catId: number) {
-    let cat = this.findCat(catId)[0];
-    if (!cat) {
-      return new NotFoundException();
-    }
-    return { ...cat };
-  }
-
-  updateCat(
-    catId: number,
+  async insertDog(
     title: string,
     desc: string,
     size: number,
     price: number,
-  ) {
-    let [cat, index] = this.findCat(catId);
-    let updated = { ...cat };
-    if (title) {
-      updated.title = title;
-    }
-    if (desc) {
-      updated.description = desc;
-    }
-    if (size) {
-      updated.size = size;
-    }
-    if (price) {
-      updated.price = price;
-    }
-    this.cats[index] = updated;
+  ): Promise<any> {
+    this.id++;
+    const newDog = new Dog(this.id, title, desc, size, price);
+    this.dog.push(newDog);
+    return await { ...newDog };
   }
 
-  deleteCat(catId: number) {
-    let index = this.findCat(catId)[1];
-    this.cats.splice(index, 1);
+  async updateDog(
+    id: number,
+    title: string,
+    desc: string,
+    size: number,
+    price: number,
+  ): Promise<any> {
+    let [dog, index] = this.findDog(id);
+    if (dog && index) {
+      let updated = { ...dog };
+      if (title) {
+        updated.title = title;
+      }
+      if (desc) {
+        updated.description = desc;
+      }
+      if (size) {
+        updated.size = size;
+      }
+      if (price) {
+        updated.price = price;
+      }
+      this.dog[index] = updated;
+      return await updated;
+    } else {
+      return await new NotFoundException();
+    }
   }
 
-  private findCat(catId: number): [Cat, number] {
-    let catIndex = this.cats.findIndex((el) => el.id == catId);
-    let cat = this.cats[catIndex];
-    return [cat, catIndex];
+  async deleteDog(id: number) {
+    let index = this.findDog(id)[1];
+    if (!index) {
+      return await new NotFoundException();
+    }
+    this.dog.splice(index, 1);
+    return await {
+      message: `The dog with the id ${id} was deleted successfully`,
+    };
+  }
+
+  private findDog(id: number): [Dog, number] {
+    let dogIndex = this.dog.findIndex((el) => el.id == id);
+    let dog;
+    dogIndex != -1 ? (dog = this.dog[dogIndex]) : (dog = null);
+    return [dog, dogIndex];
   }
 }

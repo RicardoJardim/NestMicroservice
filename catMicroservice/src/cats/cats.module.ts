@@ -1,6 +1,5 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
-import { AuthGuard } from 'src/guards/auth.guard';
 import { RolesGuard } from 'src/guards/roles.guard';
 
 import { LoggerMiddleware } from '../middlewares/logger.middleware';
@@ -12,7 +11,6 @@ import { CatService } from './cats.service';
   controllers: [CatsController],
   providers: [
     CatService,
-    AuthGuard,
     {
       provide: APP_GUARD,
       useClass: RolesGuard,
@@ -21,11 +19,6 @@ import { CatService } from './cats.service';
 })
 export class CatsModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(LoggerMiddleware)
-      .forRoutes(
-        { path: 'api/cats', method: RequestMethod.GET },
-        { path: 'api/cats/:id', method: RequestMethod.GET },
-      );
+    consumer.apply(LoggerMiddleware);
   }
 }

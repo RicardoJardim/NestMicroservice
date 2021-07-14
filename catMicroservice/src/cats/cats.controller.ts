@@ -10,6 +10,7 @@ import {
   ParseIntPipe,
   UseInterceptors,
   UseGuards,
+  UsePipes,
 } from '@nestjs/common';
 import { CatService } from './cats.service';
 import { CreateCatDto } from '../dtos/create-cat.dto';
@@ -18,68 +19,54 @@ import { LoggingInterceptor } from '../interceptors/logging.interceptor';
 import { TransformInterceptor } from '../interceptors/transform.interceptor';
 import { ExcludeNullInterceptor } from 'src/interceptors/exclude_null.interceptor';
 import { Roles } from '../decorators/roles.decorator';
-import { AuthGuard } from '../guards/auth.guard';
 import { RolesGuard } from '../guards/roles.guard';
 import { Role } from '../enums/role.enum';
+import { MessagePattern } from '@nestjs/microservices';
 
 @UseInterceptors(LoggingInterceptor)
 @UseInterceptors(TransformInterceptor)
 @UseInterceptors(ExcludeNullInterceptor)
-@UseGuards(new AuthGuard())
-@Controller('api/cats')
+@Controller('cats')
 export class CatsController {
   constructor(private readonly catService: CatService) {}
 
-  @Get()
   @Roles(Role.Admin)
   @UseGuards(RolesGuard)
-  async findAll(): Promise<any[]> {
+  @MessagePattern({ cmd: 'cat', role: 'getAllCats' })
+  async findAllDogs(): Promise<any[]> {
     return await this.catService.getAllCats();
   }
 
-  @Get()
-  async findOne(@Query('id', ParseIntPipe) id: number) {
-    return this.catService.getQueryCat(id);
+  @UsePipes(new ParseIntPipe())
+  @MessagePattern({ cmd: 'cat', role: 'getOneCat' })
+  async findOneDog(id: number): Promise<any[]> {
+    return await this.catService.getQueryCat(id);
   }
 
-  @Get(':id')
-  findSingle(@Param('id', ParseIntPipe) prodId: number) {
-    return this.catService.getSingleCat(prodId);
-  }
-
-  @Patch(':id')
-  @Roles(Role.Admin)
-  changeSingle(
-    @Param('id', ParseIntPipe) prodId: number,
-    @Body(new ValidationPipe()) completeBody: CreateCatDto,
-  ) {
-    this.catService.updateCat(
-      prodId,
-      completeBody.title,
-      completeBody.description,
-      completeBody.price,
+  @UsePipes(new ValidationPipe())
+  @MessagePattern({ cmd: 'cat', role: 'createCat' })
+  async createDog(body: CreateCatDto): Promise<any> {
+    return await this.catService.insertCats(
+      body.title,
+      body.description,
+      body.price,
     );
-    return null;
   }
 
-  @Delete(':id')
-  @Roles(Role.Admin)
-  deleteSingle(@Param('id', ParseIntPipe) prodId: number) {
-    return this.catService.deleteCat(prodId);
-  }
-
-  /*  @Post()
-    addCat(@Body('title') catTitle:string,@Body('description') catDes:string, @Body('price') catPrice:number): any{
-        this.catService.insertCats
-    } */
-  @Post()
-  @Roles(Role.Admin)
-  addCat(@Body(new ValidationPipe()) completeBody: CreateCatDto) {
-    let id = this.catService.insertCats(
-      completeBody.title,
-      completeBody.description,
-      completeBody.price,
+  @UsePipes(new ValidationPipe())
+  @MessagePattern({ cmd: 'cat', role: 'changeCat' })
+  async changeDog(id: number, body: CreateCatDto): Promise<any> {
+    return await this.catService.updateCat(
+      id,
+      body.title,
+      body.description,
+      body.price,
     );
-    return { id: id };
+  }
+
+  @UsePipes(new ParseIntPipe())
+  @MessagePattern({ cmd: 'cat', role: 'deleteCat' })
+  async deleteDog(id: number): Promise<any> {
+    return await this.catService.deleteCat(id);
   }
 }

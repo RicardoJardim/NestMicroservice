@@ -1,4 +1,4 @@
-export class Cat {
+export class Dog {
   id: number;
   title: string;
   description: string;
