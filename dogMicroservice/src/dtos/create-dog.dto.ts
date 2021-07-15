@@ -1,4 +1,11 @@
-import { IsString, IsInt, Min, Max, MinLength } from 'class-validator';
+import {
+  IsString,
+  IsInt,
+  Min,
+  Max,
+  MinLength,
+  IsNumber,
+} from 'class-validator';
 
 export class CreateDogDto {
   @IsString()
@@ -13,12 +20,12 @@ export class CreateDogDto {
   })
   description: string;
 
-  @IsInt()
+  @IsNumber()
   @Min(1)
   @Max(5)
   size: number;
 
-  @IsInt()
+  @IsNumber()
   @Min(1)
   @Max(100)
   price: number;

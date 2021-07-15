@@ -1,4 +1,4 @@
-import { IsString, IsInt, Min, Max, MinLength } from 'class-validator';
+import { IsString, Min, Max, MinLength, IsNumber } from 'class-validator';
 
 export class CreateCatDto {
   @IsString()
@@ -13,7 +13,7 @@ export class CreateCatDto {
   })
   description: string;
 
-  @IsInt()
+  @IsNumber()
   @Min(1)
   @Max(100)
   price: number;

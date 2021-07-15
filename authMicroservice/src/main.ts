@@ -28,6 +28,6 @@ async function bootstrap() {
     },
   });
   await app.startAllMicroservicesAsync();
-  await app.listen(3001);
+  await app.listen(3001, () => console.log('Auth Service is listening'));
 }
 bootstrap();

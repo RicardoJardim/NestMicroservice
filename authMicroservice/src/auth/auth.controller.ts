@@ -46,7 +46,7 @@ export class AuthController {
     return this.authService.getUser(key);
   }
 
-  @Post('/login')
+  @Post('login')
   async loginAuth(@Body(new ValidationPipe()) completeBody: AuthDto) {
     return this.authService.login(completeBody.username, completeBody.password);
   }

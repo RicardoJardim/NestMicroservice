@@ -1,5 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { TokenGenerator } from 'src/generator/token_generator';
 import { Auth } from './auth.model';
+import { MESSAGES } from 'src/constants/constants';
 @Injectable()
 export class AuthService {
   private users: Auth[] = [];
@@ -26,10 +28,10 @@ export class AuthService {
     const user: [Auth, number] = this.findUserByUP(username, password);
 
     if (!user[0]) {
-      return new NotFoundException('User is not logging yet.');
+      return new NotFoundException(MESSAGES.NOT_LOGIN);
     }
 
-    const key = `RandomKey${Math.floor(Math.random() * 200) + 50}Ola`;
+    const key = TokenGenerator.getInstance().generateKey();
     this.users[user[1]].key = key;
     return this.users[user[1]].returnObject();
   }
@@ -38,7 +40,7 @@ export class AuthService {
     const user: [Auth, number] = this.findUser(key);
 
     if (!user[0]) {
-      return new NotFoundException('User is not logging yet.');
+      return new NotFoundException(MESSAGES.NOT_LOGIN);
     }
     this.users[user[1]].key = '';
 
@@ -49,7 +51,7 @@ export class AuthService {
   }
 
   async register(username: string, password: string): Promise<{}> {
-    const key = `RandomKey${Math.floor(Math.random() * 200) + 50}Ola`;
+    const key = TokenGenerator.getInstance().generateKey();
     const newUser = new Auth(username, password, key);
     this.users.push(newUser);
     return newUser.returnObject();
@@ -59,19 +61,22 @@ export class AuthService {
     const user: [Auth, number] = this.findUser(key);
 
     if (!user[0]) {
-      return new NotFoundException('User is not logging yet.');
+      return new NotFoundException(MESSAGES.NOT_LOGIN);
     }
     this.users.splice(user[1], 1);
 
     const obj = {
       success: true,
-      message: 'User was deleted successfully',
+      message: MESSAGES.DELETED,
     };
     return { ...obj };
   }
 
   private findUser(key: string): [Auth, number] {
     let userIndex = this.users.findIndex((el) => el.key == key);
+    if (userIndex == -1) {
+      return [null, null];
+    }
     let user = this.users[userIndex];
     return [user, userIndex];
   }

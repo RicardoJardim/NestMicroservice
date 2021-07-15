@@ -16,12 +16,10 @@ import {
 import { CatsService } from './cats.service';
 import { ValidationPipe } from '../pipes/validation.pipe';
 import { LoggingInterceptor } from '../interceptors/logging.interceptor';
-import { TransformInterceptor } from '../interceptors/transform.interceptor';
 import { ExcludeNullInterceptor } from 'src/interceptors/exclude_null.interceptor';
 import { AuthGuard } from '../guards/auth.guard';
 
 @UseInterceptors(LoggingInterceptor)
-@UseInterceptors(TransformInterceptor)
 @UseInterceptors(ExcludeNullInterceptor)
 @UseGuards(AuthGuard)
 @Controller('api/cats')
