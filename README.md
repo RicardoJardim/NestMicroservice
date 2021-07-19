@@ -11,6 +11,7 @@ Disadvantages
   -  A single page/screen in the client app might require several calls to multiple services.
   -  Every microservice needs to be concerned with security issues
 
+
 ![alt text](https://github.com/RicardoJardim/NestMicroservice/blob/main/nest.png "Diagram")
 
 
@@ -25,7 +26,8 @@ Advantages
   - Authentication and authorization
 Disadvantages
   - Single point of failure
-  - 
+  - Longer response time than direct client-to-microservice communication
+  
   
 ![alt text](https://github.com/RicardoJardim/NestMicroservice/blob/main/nest2.png "Diagram2")
 
