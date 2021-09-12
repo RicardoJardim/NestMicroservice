@@ -24,6 +24,8 @@ Advantages
   - Provides the optimal API for each client
   - IP allowlisting
   - Authentication and authorization
+
+
 Disadvantages
   - Single point of failure
   - Longer response time than direct client-to-microservice communication
